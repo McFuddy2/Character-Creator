@@ -25,10 +25,10 @@ class Character:
         self.charisma = 10
         self.assign_stats()
         self.assign_name()
+        self.assign_background()
         self.assign_race()
         self.pick_a_class()
-        self.assign_background()
-
+        
 
 
 
@@ -80,6 +80,33 @@ class Character:
 
     def assign_background(self):
         self.background = random.choice(all_backgrounds)
+        if self.background.ability_improvements[0] == "Strength":
+            self.strength += 2
+
+        elif self.background.ability_improvements[0] == "Dexterity":
+            self.dexterity += 2
+        elif self.background.ability_improvements[0] == "Constitution":
+            self.constitution += 2
+        elif self.background.ability_improvements[0] == "Wisdom":
+            self.wisdom += 2
+        elif self.background.ability_improvements[0] == "Intelligence":
+            self.intelligence += 2
+        elif self.background.ability_improvements[0] == "Charisma":
+            self.charisma += 2
+
+        if self.background.ability_improvements[0] == "Strength":
+            self.strength += 1
+        elif self.background.ability_improvements[1] == "Dexterity":
+            self.dexterity += 1
+        elif self.background.ability_improvements[1] == "Constitution":
+            self.constitution += 1
+        elif self.background.ability_improvements[1] == "Wisdom":
+            self.wisdom += 1
+        elif self.background.ability_improvements[1] == "Intelligence":
+            self.intelligence += 1
+        elif self.background.ability_improvements[1] == "Charisma":
+            self.charisma += 1
+        print(f"LOOK AT THIS {self.background.ability_improvements[0]}, {self.background.ability_improvements[1]}")
         self.merge_inventories(self.background.equipment)
 
     def merge_inventories(self, new_inv):
