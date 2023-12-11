@@ -1,14 +1,13 @@
 import random
-from names import first_name, last_name
-from races import Race, race_list
-from classes import class_options, DNDClass
+from names import *
+from races import *
+from classes import *
 from itertools import combinations
-from backgrounds import Feat, Background, all_backgrounds, all_feats
+from backgrounds import *
+from feats import *
 
-# -UA content
-# -Pick background based on where the +2 +1 go (check to see if that works… are there missing options? How to handle that…)
+
 # -Random generate flaws,bonds, and ideals
-# -randomly pick from starting equipment.
 # -write out features/traits
 # -take suggested spells
 # -print all the above in a decently readable way.
@@ -17,6 +16,7 @@ from backgrounds import Feat, Background, all_backgrounds, all_feats
 
 class Character:
     def __init__(self):
+        self.equipment = {}
         self.strength = 10
         self.dexterity = 10
         self.constitution = 10
@@ -28,6 +28,8 @@ class Character:
         self.assign_race()
         self.pick_a_class()
         self.assign_background()
+
+
 
 
     def assign_stats(self):
@@ -72,12 +74,20 @@ class Character:
 
 
         self.dndclass = random.choice(list(potential_class))
+        
+        self.merge_inventories(self.dndclass.starting_equipment)
+
 
     def assign_background(self):
         self.background = random.choice(all_backgrounds)
+        self.merge_inventories(self.background.equipment)
 
-
-
+    def merge_inventories(self, new_inv):
+        for key, value in new_inv.items():
+                if key in  self.equipment:
+                    self.equipment[key] += value
+                else:
+                    self.equipment[key] = value
 
 
 
@@ -85,7 +95,8 @@ class Character:
 
 new = Character()
 print(f"I am {new.first_name} {new.last_name}, a proud {new.race}") 
-print(f"I use to be a {new.background} and now i am a {new.dndclass}.")
+print(f"I use to be a {new.background} and now I am a {new.dndclass}.")
+print(f"my equipment includes {new.equipment}")
 print(f"my speed is {new.race.speed_in_feet} feet per round")
 print(f"I have a STR of {new.strength}",
       f"I have a DEX of {new.dexterity}",
