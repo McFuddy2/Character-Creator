@@ -106,7 +106,6 @@ class Character:
             self.intelligence += 1
         elif self.background.ability_improvements[1] == "Charisma":
             self.charisma += 1
-        print(f"LOOK AT THIS {self.background.ability_improvements[0]}, {self.background.ability_improvements[1]}")
         self.merge_inventories(self.background.equipment)
 
     def merge_inventories(self, new_inv):
@@ -121,18 +120,21 @@ class Character:
 
 
 new = Character()
-print(f"I am {new.first_name} {new.last_name}, a proud {new.race}") 
+
+
+print(f"I am {new.first_name} {new.last_name}, I am a proud {new.race}") 
 print(f"I use to be a {new.background} and now I am a {new.dndclass}.")
 print(f"my equipment includes {new.equipment}")
 print(f"my speed is {new.race.speed_in_feet} feet per round")
-print(f"I have a STR of {new.strength}",
-      f"I have a DEX of {new.dexterity}",
-      f"I have a CON of {new.constitution}",
-      f"I have a WIS of {new.wisdom}",
-      f"I have an INT of {new.intelligence}",
-      f"and I have a CHA of {new.charisma}")
-
-
+print(f"I have a STR of {new.strength}")
+print(f"I have a DEX of {new.dexterity}")
+print(f"I have a CON of {new.constitution}")
+print(f"I have a WIS of {new.wisdom}")
+print(f"I have an INT of {new.intelligence}")
+print(f"and I have a CHA of {new.charisma}")
+print(f"As a {new.race} I have the following special traits; {new.race.special_traits}")
+print(f"I am no longer the {new.background} I once was. However I did learn a speacial feat that i think will benefit me, {new.background.feat}")
+print(f"Because of my {new.background.feat}, {new.background.feat.feat_features}")
 
 
 
