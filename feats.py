@@ -16,7 +16,7 @@ class Feat:
         return f"{self.feat_name}"
 
 
-initiative_proficiency = ()
+initiative_proficency = ()
 initiative_swap = ()
 tool_prof = ()
 discount = ()
@@ -40,7 +40,7 @@ furniture_as_weapons = ()
 
 
 
-alert_features = ("Always on the lookout for danger, you gain the following benefits:", initiative_proficiency, initiative_swap)
+alert_features = ("Always on the lookout for danger, you gain the following benefits:", initiative_proficency, initiative_swap)
 crafter_features = ("You gain Tool Proficiency with three different Artisan’s Tools* of your choice", tool_prof, discount, faster_crafting)
 healer_features = ("You have the training and intuition to administer first aid and other care effectively, granting you the following benefits:", battle_medic, healing_rerolls)
 lightly_armored_features = ("You gain the following Armor Training: Light Armor, Medium Armor, and Shield.")
