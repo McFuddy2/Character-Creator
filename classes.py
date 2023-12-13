@@ -55,47 +55,38 @@ class DNDClass:
 
 
 
-barbarian_additional_equipment = {"explorer's pack":1, "handaxes":4, "GP":15}
-barb_equip1 = {"greataxe":1} 
-barb_equip2 = {"battleaxe":1, "shield":1, "GP":15}
-barbarian_equipment = (barbarian_additional_equipment)
+barbarian_additional_equipment = {"Explorer's Pack":1, "Handaxes":4, "GP":15}
+barb_equip1 = {"Greataxe":1} 
+barb_equip2 = {"Battleaxe":1, "Shield":1, "GP":15}
+barbarian_equipment = (barbarian_additional_equipment, barb_equip1, barb_equip2)
 
-bard_equipment = (barb_equip1, barb_equip2)
+bard_equipment = {"Dagger":2, "Entertainer's Pack":1, "Leather Armor":1, "Musical instrument (your choice)":1, "GP":26}
 
+cleric_equipment = {"Chain Shirt":1, "Holy Symbol":1, "Mace":1, "Priest's Pack":1, "Shield":1, "GP":7}
 
-
-cleric_equipment = ()
-
-
-
-druid_equipment = ()
-
+druid_equipment = {"Druidic Focus (Quarterstaff)":1, "Explorer's Pack":1, "Herbalism Kit":1, "Leather Armor":1, "Shield":1, "Sickle":1, "GP":9}
 
 fighter_additional_equipment = {"Chain Mail":1, "Crossbow Bolts":20, "Dungeoneer’s Pack":1, "Light Crossbow":1,"Quiver":1, "GP":1}
 fight_equip1 = {"Greatsword":1}
 fight_equip2 = {"Longsword":1, "Shield":1, "GP":25}
 fighter_equipment = (fighter_additional_equipment, fight_equip1, fight_equip2)
 
+monk_equipment = {"Artisan's Tools":1, "Dagger":5, "Explorer's Pack":1, "Musical Instrument":1, "Spear":1, "GP":9}
 
-monk_equipment = ()
+paladin_equipment = {"Chain Mail":1, "Holy Symbol":1, "Javelin":6, "Longsword":1, "Priest's Pack":1, "Shield":1, "GP":9}
 
+ranger_additional_equipment = {"Arrows":20, "Druidic Focus (Sprig of Mistletoe)":1, "Explorer’s Pack":1, "Quiver":1, "Scimitar":1, "Shortsword":1, "Studded Leather Armor":1, "GP":7}
+ranger_equip1 = {"Longbow":1}
+ranger_equip2 = {"Shortbow":1}
+ranger_equipment = (ranger_additional_equipment, ranger_equip1, ranger_equip2)
 
-paladin_equipment = ()
+rogue_equipment = {"Arrows":20, "Burglar’s Pack":1, "Dagger":2, "Leather Armor":1, "Quiver":1, "Shortbow":1, "Shortsword":1, "Thieves’ Tools":1, "GP":18}
 
+sorcerer_equipment = {"Arcane Focus (Crystal)":1, "Dagger":2, "Dungeoneer's Pack":1, "Spear":1, "GP":28}
 
-ranger_equipment = ()
+warlock_equipment = {"Arcane Focus (Orb)":1, "Book (Occult Lore)":1, "Dagger":2, "Leather Armor":1, "Scholar's Pack":1, "Sickle":1, "GP":15}
 
-
-rogue_equipment = ()
-
-
-sorcerer_equipment = ()
-
-
-warlock_equipment = ()
-
-
-wiard_equipment = ()
+wizard_equipment = {"Arcane Focus (Qurterstaff)":1, "Dagger":2, "Robe":1, "Scholar's Pack":1, "GP":5}
 
 
 
@@ -113,16 +104,24 @@ ranger_features = ()
 rogue_features = ()
 sorcerer_features = ()
 warlock_features = ()
-wiard_features = ()
+wizard_features = ()
 
 
 
 
 
-
-
-barbarian = DNDClass("Barbarian", "Strength", 12, ("Strength", "Constitution"), 2, ("Animal Handling", "Athletics", "Intimidation", "Nature", "Perception", "Survival"), ("simple", "martial"), None, ("light", "medium", "shields"), barbarian_equipment, barbarian_features)
-fighter = DNDClass("Fighter", ("Strength", "Dexterity"), 10, ("Strength", "Constitution"), 2, ("Acrobatics", "Animal Handling", "Athletics", "History", "Insight", "Intimidation", "Persuasion", "Perception", "Survival"),("simple","martial"), None, ("light", "medium", "heavy", "shields"), fighter_equipment,fighter_features)
+barbarian = DNDClass("Barbarian", "Strength", 12, ("Strength", "Constitution"), 2, ("Animal Handling", "Athletics", "Intimidation", "Nature", "Perception", "Survival"), ("Simple", "Martial"), None, ("Light", "Medium", "Shield"), barbarian_equipment, barbarian_features)
+bard = DNDClass("Bard", "Charisma", 8, ("Dexterity", "Charisma"), 3, ("Acrobatics", "Animal Handling", "Arcana", "Athletics", "Deception", "History", "Insight", "Intimidation", "Investigation", "Medicine", "Nature", "Perception", "Performance", "Persuasion", "Religion", "Sleight of Hand", "Stealth", "Survival"), "Simple", "3 Instruments of your choice", "Light", bard_equipment, bard_features)
+cleric = DNDClass("Cleric", "Wisdom", 8, ("Wisdom", "Charisma"), 2, ("History", "Insight", "Medicine", "Persuasion", "Religion"), "Simple", None, ("Light", "Medium", "Sheild"), cleric_equipment, cleric_features)
+druid = DNDClass("Druid", "Wisdom", 8, ("Intelligence", "Wisdom"), 2, ("Arcana", "Animal Handling", "Insight", "Medicine", "Nature", "Perception", "Religion", "Survival"), ("Simple"), "Herbalism Kit", ("Light", "Shield"), druid_equipment, druid_features )
+fighter = DNDClass("Fighter", ("Strength", "Dexterity"), 10, ("Strength", "Constitution"), 2, ("Acrobatics", "Animal Handling", "Athletics", "History", "Insight", "Intimidation", "Persuasion", "Perception", "Survival"),("Simple","Martial"), None, ("Light", "Medium", "Heavy", "Shield"), fighter_equipment, fighter_features)
+monk = DNDClass("Monk", ("Deterity and Wisdom"), 8, ("Strength", "Deterity"), 2, ("Acrobatics", "Athletics", "History", "Insight", "Religion", "Stealth"), ("Simple", "Martial (if light)"), "choose 1 artisan tool OR 1 instrument", (None), monk_equipment, monk_features)
+paladin = DNDClass("Paladin", ("Strength and Charisma"), 10, ("Wisdom", "Charisma"), 2, ("Athletics", "Insight", "Intimidation", "Medicine", "Persuasion", "Religion"), ("Simple", "Martial"), None, ("Light", "Medium", "Heavy", "Sheild"), paladin_equipment, paladin_features)
+ranger = DNDClass("Ranger", ("Dexterity", "Wisdom"), 10, ("Strength", "Dexterity"), 3, ("Animal Handling", "Athletics", "Insight", "Investigation", "Nature", "Perception", "Stealth", "Survival"), ("Simple", "Martial"), None, ("Light", "Medium", "Sheild"), ranger_equipment, ranger_features)
+rogue = DNDClass("Rogue", "Dexterity", 8, ("Dexterity", "Intelligence"), 4, ("Acrobatics", "Athletics", "Deception", "Insight", "Intimidation", "Investigation", "Perception", "Persuasion", "Sleight of Hand", "Stealth"), ("Simple", "Martial (if finesse)"), "thieves' Tools", "Light", rogue_equipment, rogue_features)
+sorcerer = DNDClass("Sorcerer", "Charisma", 6, ("Constitution", "Charisma"), 2, ("Arcana", "Deception", "Insight", "Intimidation", "Persuasion", "Religion"), "Simple", None, None, sorcerer_equipment, sorcerer_features)
+warlock = DNDClass("Warlock", "Charisma", 8, ("Wisdom", "Charisma"), 2, ("Arcana", "Deception", "History", "Intimidation", "Investigation", "Nature", "Religion"), "Simple", None, "Light", warlock_equipment, warlock_features)
+wizard = DNDClass("Wizard", "Intelligence", 6, ("Intelligence", "Wisdom"), 2, ("Arcana", "History", "Insight", "Investigation", "Medicine", "Religion"), "Simple", None, None, wizard_equipment, wizard_features)
 
 
 

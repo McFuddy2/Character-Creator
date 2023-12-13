@@ -11,6 +11,9 @@ from feats import *
 # -write out features/traits
 # -take suggested spells
 # -print all the above in a decently readable way.
+
+
+
 saving_throw_list = {"Strength":False,
                      "Deterity":False,
                      "Constitution":False,
@@ -40,13 +43,14 @@ skills_list = {"Acrobatics":False,
 
 class Character:
     def __init__(self, level=1):
-        self.equipment = {}
+        self.equipment = {"GP":0}
         self.skill_proficency = skills_list.copy()
         self.skill_bonuses = skills_list.copy()
         self.saving_throw_prof = saving_throw_list.copy()
         self.saving_throw_bonuses = saving_throw_list.copy()
         self.armor_training = set()
         self.weapon_prof = set()
+        self.tool_prof = set()
         self.languages = set()
         self.level = level
         self.proficency_bonus = 2
@@ -58,8 +62,8 @@ class Character:
         self.charisma = 10
         self.assign_stats()
         self.assign_name()
-        self.assign_background()
         self.assign_race()
+        self.assign_background()
         self.pick_a_class()
         self.strength_mod = (self.strength - 10) // 2
         self.dexterity_mod = (self.dexterity - 10) // 2
@@ -70,9 +74,11 @@ class Character:
         self.update_skill_bonuses()
         self.initiative = 0 + self.dexterity_mod
         self.update_saving_throws()
-        self.allignment = random.choice("Lawful Good", "Lawful Neutral", "Lawful Evil", "Neutral Good", "True Neutral", "Neutral Evil", "Chaotic Good", "Chaotic Neutral", "Chaotic, Evil")
-        self.hp = self.dndclass.hit_die + self.constitution_mod
-
+        self.allignment = random.choice(["Lawful Good", "Lawful Neutral", "Lawful Evil", "Neutral Good", "True Neutral", "Neutral Evil", "Chaotic Good", "Chaotic Neutral", "Chaotic, Evil"])
+        self.hp_modifier = 0
+        self.hp = self.dndclass.hit_die + self.constitution_mod + self.hp_modifier
+        
+        
 
 
     def assign_stats(self):
@@ -94,6 +100,25 @@ class Character:
 
     def assign_race(self):
         self.race = random.choice(race_list)
+        if self.race.gain_skill_prof != None:
+            for key, value in self.race.gain_skill_prof:
+                race_skills = random.sample(value, key)
+                for skill in race_skills:
+                    self.skill_proficency[skill] = True
+        if self.race.gain_tool_prof != None:
+            for key, value in self.race.gain_skill_prof:
+                race_tools = random.sample(value, key)
+                for tool in race_tools:
+                    self.tool_prof.append(tool) 
+        if self.race.gain_feat != None:
+            pass 
+        if self.race.gain_hp != None:
+            for hp_amount, per_x_levels in self.race.gain_hp:
+                self.hp_modifier += (hp_amount * (per_x_levels*self.level))
+        if self.race.gain_spells != None:
+            pass 
+
+
 
     def pick_a_class(self):
         stat_req_met = set()
@@ -129,7 +154,9 @@ class Character:
         self.saving_throw_prof[self.dndclass.saving_throw_prof[1]] = True
 
 
-
+        self.weapon_prof.add(self.dndclass.weapon_prof) 
+        self.tool_prof.add(self.dndclass.tool_prof)
+        self.armor_training.add(self.dndclass.armor_training)
 
 
     def assign_background(self):
@@ -164,6 +191,12 @@ class Character:
 
         self.skill_proficency[self.background.skill_prof[0]] = True
         self.skill_proficency[self.background.skill_prof[1]] = True
+
+
+        self.tool_prof.add(self.background.tool_prof)
+        self.languages.add("Common")
+        self.languages.add(self.background.language)
+        
 
 
     def merge_inventories(self, new_inv):
@@ -217,24 +250,42 @@ class Character:
 
 
 new = Character()
+equipment_items = [(quantity, item) for item, quantity in new.equipment.items()]
+equipment_str = "\n".join([f"{item[0]}x {item[1]}" for item in equipment_items])
+skills_str = "\n".join([f"{skill:<20} {bonus}" for skill, bonus in new.skill_bonuses.items()])
+
+grouped_items = [equipment_items[i:i+3] for i in range(0, len(equipment_items), 3)]
+formatted_equipment = "\n".join([", ".join([f"{item[0]}x {item[1]}" for item in group]) for group in grouped_items])
+languages_str = ', '.join(new.languages)
+tools_str = "None" 
+if new.tool_prof != None:
+    tools_str = ', '.join(tool for tool in new.tool_prof if tool is not None)
 
 
+
+
+
+
+
+print(f"######################################################################")
 print(f"I am {new.first_name} {new.last_name}, I am a proud {new.race}") 
 print(f"I use to be a {new.background} and now I am a {new.dndclass}.")
-print(f"my equipment includes {new.equipment}")
-print(f"my speed is {new.race.speed_in_feet} feet per round")
-print(f"here is my skills list: {new.skill_bonuses}")
-print(f"I have a STR of {new.strength} which is a {new.strength_mod} modifier")
-print(f"I have a DEX of {new.dexterity} which is a {new.dexterity_mod} modifier")
-print(f"I have a CON of {new.constitution} which is a {new.constitution_mod} modifier")
-print(f"I have a WIS of {new.wisdom} which is a {new.wisdom_mod} modifier")
-print(f"I have an INT of {new.intelligence} which is a {new.intelligence_mod} modifier")
-print(f"and I have a CHA of {new.charisma} which is a {new.charisma_mod} modifier")
-print(f"As a {new.race} I have the following special traits; {new.race.special_traits}")
-print(f"I am no longer the {new.background} I once was. However I did learn a special feat that I think will benefit me, {new.background.feat}")
-print(f"Because of my {new.background.feat}, {new.background.feat.feat_features}")
-
-
+print(f"######################################################################")
+print(f"My equipment includes: {formatted_equipment}")
+print(f"######################################################################")
+print(f"My stats are:")
+print(f"HP:  {new.hp}       Initiative: {new.initiative}")
+print(f"STR: {new.strength_mod} ({new.strength})   DEX: {new.dexterity_mod} ({new.dexterity})")
+print(f"CON: {new.constitution_mod} ({new.constitution})   WIS: {new.wisdom_mod} ({new.wisdom})")
+print(f"INT: {new.intelligence_mod} ({new.intelligence})   CHA: {new.charisma_mod} ({new.charisma})")
+print(f"######################################################################")
+print(f"Here is my skills list:\n{skills_str}")
+print(f"######################################################################")
+print(f"I am good with {new.weapon_prof} weapons.")
+print(f"I am handy with {tools_str}")
+print(f"I can also speak {languages_str}.")
+print(f"I can wear the following Armor types; {new.armor_training}")
+print(f"######################################################################")
 
 
 
