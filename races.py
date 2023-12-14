@@ -1,4 +1,5 @@
 import random
+from feats import *
 
 
 
@@ -15,96 +16,114 @@ class Race:
         self.gain_hp = None
         self.gain_tool_prof = None
         self.gain_spells = None
+        self.check_for_stat_changes()
 
     def __str__(self):
         return f"{self.race_name}"
     
     def check_for_stat_changes(self):
+        features_that_gain_skill_prof = (skillfull, keen_senses, naturally_stealthy)
+        features_that_gain_feat = (versatile,)
+        features_that_gain_hp = (dwarven_toughness,)
+        features_that_gain_tool_prof = (forge_wise,)
+        features_that_gain_spells = (otherworldly_presence, drow_elven_lineage, high_elven_lineage, wood_elven_lineage, rock_gnomish_lineage, forest_gnomish_lineage, abyssal_fiendish_legacy, chthonic_fiendish_legacy, infernal_fiendish_legacy)
+
         for trait in self.special_traits:
-            if trait in gain_skill_prof:
-                if self.gain_skill_prof == None:
-                    new_dict = {trait[1][0]:trait[1][1]}
-                    trait = trait[0]
-                    self.gain_skill_prof = [new_dict]
-                else: 
-                    new_dict = {trait[1][0]:trait[1][1]}
-                    trait = trait[0]
-                    self.gain_skill_prof.append(new_dict)
+            if trait in features_that_gain_skill_prof and isinstance(trait, tuple) and len(trait) == 2 and isinstance(trait[1], tuple):
+                try:
+                    num_skills_to_pick, skill_list = trait[1]
+                    selected_skills = random.sample(skill_list, num_skills_to_pick)
 
-            if trait in gain_feat:
-                if self.gain_feat == None:
-                    new_dict = {trait[1][0]:trait[1][1]}
-                    trait = trait[0]
-                    self.gain_feat = [new_dict]
-                else: 
-                    new_dict = {trait[1][0]:trait[1][1]}
-                    trait = trait[0]
-                    self.gain_feat.append(new_dict)
-
-            if trait in gain_hp:
-                if self.gain_hp == None:
-                    new_dict = {trait[1][0]:trait[1][1]}
-                    trait = trait[0]
-                    self.gain_hp = [new_dict]
-                else: 
-                    new_dict = {trait[1][0]:trait[1][1]}
-                    trait = trait[0]
-                    self.gain_hp.append(new_dict)
-
-            if trait in gain_tool_prof:
-                if self.gain_tool_prof == None:
-                    new_dict = {trait[1][0]:trait[1][1]}
-                    trait = trait[0]
-                    self.gain_tool_prof = [new_dict]
-                else: 
-                    new_dict = {trait[1][0]:trait[1][1]}
-                    trait = trait[0]
-                    self.gain_tool_prof.append(new_dict)
-
-            if trait in gain_spells:
-                if self.gain_spells == None:
-                    new_dict = {trait[1][0]:trait[1][1]}
-                    trait = trait[0]
-                    self.gain_spells = [new_dict]
-                else: 
-                    new_dict = {trait[1][0]:trait[1][1]}
-                    trait = trait[0]
-                    self.gain_spells.append(new_dict)
-
+                    if self.gain_skill_prof is None:
+                        self.gain_skill_prof = selected_skills
+                    else:
+                        self.gain_skill_prof.extend(selected_skills)
+                except (ValueError, TypeError):
+                    pass
                 
+            if trait in features_that_gain_tool_prof and isinstance(trait, tuple) and len(trait) == 2 and isinstance(trait[1], tuple):
+                try:
+                    num_tools_to_pick, tool_list = trait[1]
+                    selected_tools = random.sample(tool_list, num_tools_to_pick)
+
+                    if self.gain_tool_prof is None:
+                        self.gain_tool_prof = selected_tools
+                    else:
+                        self.gain_tool_prof.extend(selected_tools)
+                except (ValueError, TypeError):
+                    pass
+            if trait in features_that_gain_hp and isinstance(trait, tuple) and len(trait) == 2 and isinstance(trait[1], tuple):
+                try:
+                    if self.gain_hp is None:
+                        self.gain_hp = trait[1]
+                    else:
+                        # Make sure gain_hp is always a tuple
+                        self.gain_hp = tuple(self.gain_hp) + tuple(trait[1])
+                except (ValueError, TypeError):
+                    pass
+            if trait in features_that_gain_feat and isinstance(trait, tuple) and len(trait) == 2 and isinstance(trait[1], tuple):
+                try:
+                    if self.gain_feat is None:
+                        self.gain_feat = [(trait[1][1])]
+                    else:
+                        self.gain_feat.extend([(trait[1][1])])
+                except (ValueError, TypeError):
+                    pass    
+            if isinstance(trait, tuple) and trait in features_that_gain_spells:
+                try:
+                    if self.gain_spells is None:
+                        self.gain_spells = [trait[1]]
+                    else:
+                        self.gain_spells.extend([trait[1]])
+                except (ValueError, TypeError):
+                    pass
             
            
-    
 
+
+drow_elf_spells = {"Cantrip":["Dancing Lights"], "1st":["Farie Fire"], "2nd":["Darkness"]}
+high_elf_spells = {"Cantrip":["Prestidigitation"], "1st":["Detect Magic"], "2nd":["Misty Step"]}
+wood_elf_spells = {"Cantrip":["Druidcraft"], "1st":["Longstrider"], "2nd":["Pass without Trace"]} 
+tiefling_spells = {"Cantrip":["Thaumaturgy"]}
+abyssal_tiefling_spells = {"Cantrip":["Poison Spray"], "1st":["Ray of Sickness"], "2nd":["Hold Person"]} 
+chthonic_tiefling_spells = {"Cantrip":["Chill Touch"], "1st":["False Life"], "2nd":["Ray of Enfeeblement"]} 
+infernal_tiefling_spells = {"Cantrip":["Fire Bolt"], "1st":["Hellish Rebuke"], "2nd":["Darkness"]} 
+rock_gnome_spells = {"Cantrip":["Mending","Prestidigitation"]} 
+forest_gnome_spells = {"Cantrip":["Minor Illusion"], "1st":["Speak with Animals"]} 
+
+
+
+
+# if you add new traits, and those traits have an effect on the math. please add that trait to the list in "check_for_stat_changes(self):" above.
 
 resourceful = "You gain Inspiration whenever you finish a Long Rest"
 skillfull = ("You gain Proficiency in one Skill of your choice", (1, ("Acrobatics", "Animal Handling", "Arcana", "Athletics", "Deception", "History", "Insight", "Intimidation", "Investigation", "Medicine", "Nature", "Perception", "Performance", "Persuasion", "Religion", "Sleight of Hand", "Stealth", "Survival")))
-versatile = ("You gain the Skilled Feat", (1, ("Skilled")))
+versatile = ("You gain the Skilled Feat", (1, skilled))
 darkvision = "You have Darkvision with a range of 60 feet."
 dwarven_resilience = "You have Resistance to Poison Damage. You also have Advantage on saving throws you make to avoid or end the Poisoned Condition on yourself."
 dwarven_toughness = ("Your Hit Point Maximum increases by 1, and it increases by 1 again whenever you gain a level", (1, 1))
 forge_wise = ("Your divine creator gave you an uncanny affinity for working with stone or metal. You gain Tool Proficiency with two of the following options of your choice: Jeweler’s Tools, Mason’s Tools, Smith’s Tools, or Tinker’s Tools", (2, ("Jeweler’s Tools", "Mason’s Tools", "Smith’s Tools", "Tinker’s Tools")))
 stonecunning = "As a Bonus Action, you gain Tremorsense with a range of 60 feet for 10 minutes. You must be on a stone surface or touching such a surface to use this Tremorsense. The stone can be natural or worked. You can use this Bonus Action a number of times equal to your Proficiency Bonus, and you regain all expended uses when you finish a Long Rest."
-drow_elven_lineage = "You are part of an elven lineage that grants you supernatural abilities. You are a Drow, the lineage of the Underdark. Starting at 1st level The range of your Darkvision increases to 120 feet. At 1st level you also know the Dancing Lights cantrip. Starting at 3rd level you know the spell Faerie Fire. Starting at 5th level you also know the Darkness spell. Once you cast either Farie Fire or Darkness with this trait, you can’t cast that Spell with it again until you finish a Long Rest; however, you can cast the Spell using any Spell Slots you have of the appropriate level. Intelligence, Wisdom, or Charisma is your spellcasting ability for the Spells you cast with this trait (choose the ability when you select the lineage)."
-high_elven_lineage = "You are part of an elven lineage that grants you supernatural abilities. You are a High Elf, the lineage of fey crossings and other magical locations. Starting at 1st level You know the Prestidigitation cantrip. Whenever you finish a Long Rest, you can replace that cantrip with a different cantrip from the Arcane Spell List. Starting at 3rd level you know the Detect Magic spell. Starting at 5th level you know the Misty Step spell.Once you cast either Detect Magic or Misty Step with this trait, you can’t cast that Spell with it again until you finish a Long Rest; however, you can cast the Spell using any Spell Slots you have of the appropriate level. Intelligence, Wisdom, or Charisma is your spellcasting ability for the Spells you cast with this trait (choose the ability when you select the lineage)."
-wood_elven_lineage = "You are part of an elven lineage that grants you supernatural abilities. You are a Wood Elf, the lineage of primeval forests. Starting t 1st level your Speed increases to 35 feet. You also know the Druidcraft cantrip. Starting at 3rd level you know the Longstrider spell. Starting at 5th level you know the Pass without Trace spell. Once you cast either Longstrider or Pass without Trace with this trait, you can’t cast that Spell with it again until you finish a Long Rest; however, you can cast the Spell using any Spell Slots you have of the appropriate level. Intelligence, Wisdom, or Charisma is your spellcasting ability for the Spells you cast with this trait (choose the ability when you select the lineage)."
+drow_elven_lineage = ("You are part of an elven lineage that grants you supernatural abilities. You are a Drow, the lineage of the Underdark. Starting at 1st level The range of your Darkvision increases to 120 feet. At 1st level you also know the Dancing Lights cantrip. Starting at 3rd level you know the spell Faerie Fire. Starting at 5th level you also know the Darkness spell. Once you cast either Farie Fire or Darkness with this trait, you can’t cast that Spell with it again until you finish a Long Rest; however, you can cast the Spell using any Spell Slots you have of the appropriate level. Intelligence, Wisdom, or Charisma is your spellcasting ability for the Spells you cast with this trait (choose the ability when you select the lineage).", drow_elf_spells)
+high_elven_lineage = ("You are part of an elven lineage that grants you supernatural abilities. You are a High Elf, the lineage of fey crossings and other magical locations. Starting at 1st level You know the Prestidigitation cantrip. Whenever you finish a Long Rest, you can replace that cantrip with a different cantrip from the Arcane Spell List. Starting at 3rd level you know the Detect Magic spell. Starting at 5th level you know the Misty Step spell.Once you cast either Detect Magic or Misty Step with this trait, you can’t cast that Spell with it again until you finish a Long Rest; however, you can cast the Spell using any Spell Slots you have of the appropriate level. Intelligence, Wisdom, or Charisma is your spellcasting ability for the Spells you cast with this trait (choose the ability when you select the lineage).", high_elf_spells)
+wood_elven_lineage = ("You are part of an elven lineage that grants you supernatural abilities. You are a Wood Elf, the lineage of primeval forests. Starting t 1st level your Speed increases to 35 feet. You also know the Druidcraft cantrip. Starting at 3rd level you know the Longstrider spell. Starting at 5th level you know the Pass without Trace spell. Once you cast either Longstrider or Pass without Trace with this trait, you can’t cast that Spell with it again until you finish a Long Rest; however, you can cast the Spell using any Spell Slots you have of the appropriate level. Intelligence, Wisdom, or Charisma is your spellcasting ability for the Spells you cast with this trait (choose the ability when you select the lineage).", wood_elf_spells)
 fey_ancestry = "You have Advantage on saving throws you make to avoid or end the Charmed Condition on yourself."
-keen_senses = ("You have Proficiency in the Perception Skill.", (1, ("Perception")))
+keen_senses = ("You have Proficiency in the Perception Skill.", (1, ("Perception", "Perception")))
 trance = "You don’t need to sleep, and magic can’t put you to sleep. You can finish a Long Rest* in 4 hours if you spend those hours in a trancelike meditation, during which you retain consciousness."
 gnomish_cunning = "You have Advantage on Intelligence, Wisdom, and Charisma saving  throws."
-forest_gnomish_lineage = "You are part of a gnomish lineage that grants you supernatural abilities. You are a Forest Gnome, the lineage of magic-filled forests. You know the Minor Illusion cantrip. You can also cast the Speak with Animals Spell with this trait. You can cast it with the trait a number of times equal to your Proficiency Bonus, and you regain all expended uses when you finish a Long Rest. You can also use any Spell Slots you have to cast the Spell. Intelligence, Wisdom, or Charisma is your spellcasting ability for the Spells you cast with this trait (choose the ability when you select the lineage)."
-rock_gnomish_lineage = "You are part of a gnomish lineage that grants you supernatural abilities. You are a Rock Gnome, the lineage of primeval mountains. You know the Mending and Prestidigitation cantrips. In addition, you can spend 10 minutes casting Prestidigitation to create a Tiny clockwork device (AC 5, 1 HP), such as a toy, a fire starter, or a music box. Casting the Spell in this way consumes 10 GP worth of raw material (string, gears, and the like), which you provide during the casting. When you create the device, you determine its function by choosing one effect from Prestidigitation; the device produces that effect whenever you or another creature takes a Bonus Action to touch the device and activate it. If the chosen effect has options within it, you choose one of those options for the device when you create it. For example, if you choose the spell’s ignite-extinguish effect, you determine whether the device ignites or extinguishes fire; the device doesn’t do both. You can have three such devices in existence at a time, and each one dismantles itself 8 hours after its creation. You can also touch one of your devices and dismantle it as an Action. After a device is dismantled, the 10 GP of materials used to create it can be reclaimed. Intelligence, Wisdom, or Charisma is your spellcasting ability for the Spells you cast with this trait (choose the ability when you select the lineage)."
+forest_gnomish_lineage = ("You are part of a gnomish lineage that grants you supernatural abilities. You are a Forest Gnome, the lineage of magic-filled forests. You know the Minor Illusion cantrip. You can also cast the Speak with Animals Spell with this trait. You can cast it with the trait a number of times equal to your Proficiency Bonus, and you regain all expended uses when you finish a Long Rest. You can also use any Spell Slots you have to cast the Spell. Intelligence, Wisdom, or Charisma is your spellcasting ability for the Spells you cast with this trait (choose the ability when you select the lineage).", forest_gnome_spells)
+rock_gnomish_lineage = ("You are part of a gnomish lineage that grants you supernatural abilities. You are a Rock Gnome, the lineage of primeval mountains. You know the Mending and Prestidigitation cantrips. In addition, you can spend 10 minutes casting Prestidigitation to create a Tiny clockwork device (AC 5, 1 HP), such as a toy, a fire starter, or a music box. Casting the Spell in this way consumes 10 GP worth of raw material (string, gears, and the like), which you provide during the casting. When you create the device, you determine its function by choosing one effect from Prestidigitation; the device produces that effect whenever you or another creature takes a Bonus Action to touch the device and activate it. If the chosen effect has options within it, you choose one of those options for the device when you create it. For example, if you choose the spell’s ignite-extinguish effect, you determine whether the device ignites or extinguishes fire; the device doesn’t do both. You can have three such devices in existence at a time, and each one dismantles itself 8 hours after its creation. You can also touch one of your devices and dismantle it as an Action. After a device is dismantled, the 10 GP of materials used to create it can be reclaimed. Intelligence, Wisdom, or Charisma is your spellcasting ability for the Spells you cast with this trait (choose the ability when you select the lineage).", rock_gnome_spells)
 brave = "You have Advantage on saving throws you make to avoid or end the Frightened Condition on yourself."
 halfling_nimbleness = "You can move through the space of any creature that is of a Size larger than yours, but you can’t stop there."
 luck = "When you roll a 1 on the d20 of a d20 Test, you can reroll the die, and you must use  the new roll."
-naturally_stealthy = ("You have Proficiency in the Stealth Skill.", (1, ("Stealth")))
+naturally_stealthy = ("You have Proficiency in the Stealth Skill.", (1, ("Stealth", "Stealth")))
 adrenaline_rush = "You can take the Dash  Action as a Bonus Action. When you do so, you gain a number of Temporary Hit Points equal to  your Proficiency Bonus. You can use this trait a number of times equal to your Proficiency Bonus, and you regain all  expended uses when you finish a Long Rest."
 powerful_build = "You count as one Size larger when determining your carrying capacity and  the weight you can push, drag, or lift."
 relentless_endurance = "When you are reduced to 0 Hit Points but not killed outright, you can drop to 1 Hit Point instead. Once you use this trait, you can’t do so again until you finish a Long Rest."
-abyssal_fiendish_legacy = "You are the recipient of a fiendish legacy that grants you supernatural abilities. You are Abyssal, associated with Chaotic Evil planes. Starting at 1st level You have Resistance to Poison Damage. You also know the Poison Spray cantrip. Starting at 3rd level you know the Ray of Sickness spell. Starting at 5th level you know the Hold Person spell. Once you cast the Spell with this trait, you can’t cast that Spell with it again until you finish a Long Rest;however, you can cast the Spell using any SpellSlots you have of the appropriate level.Intelligence, Wisdom, or Charisma is your spellcasting ability for the Spells you cast with this trait (choose the ability when you select the lineage)."
-chthonic_fiendish_legacy = "You are the recipient of a fiendish legacy that grants you supernatural abilities. You are Abyssal, associated with Chaotic Evil planes; Chthonic, associated with Neutral Evil planes; or Infernal, associated with Lawful Evil planes. Starting at 1st level You have Resistance to Necrotic Damage. You also know the Chill Touch cantrip. Starting at 3rd level you know the False Life spell. Starting at 5th level you know the Ray of Enfeeblement spell. Once you cast the Spell with this trait, you can’t cast that Spell with it again until you finish a Long Rest;however, you can cast the Spell using any SpellSlots you have of the appropriate level.Intelligence, Wisdom, or Charisma is your spellcasting ability for the Spells you cast with this trait (choose the ability when you select the lineage)."
-infernal_fiendish_legacy = "You are the recipient of a fiendish legacy that grants you supernatural abilities. You are Abyssal, associated with Chaotic Evil planes; Chthonic, associated with Neutral Evil planes; or Infernal, associated with Lawful Evil planes. Starting at 1st level You have Resistance to Fire Damage. You also know the Fire Bolt cantrip. Starting at 3rd level you know the Hellish Rebuke spell. Starting at 5th level you know the Darkness spell. Once you cast the Spell with this trait, you can’t cast that Spell with it again until you finish a Long Rest;however, you can cast the Spell using any SpellSlots you have of the appropriate level.Intelligence, Wisdom, or Charisma is your spellcasting ability for the Spells you cast with this trait (choose the ability when you select the lineage)."
-otherworldly_presence = ("You know the Thaumaturgy cantrip. When you cast it with this trait, the Spell uses the same spellcasting ability you use for your Fiendish Legacy trait.", (1, ("Thaumaturgy")))
+abyssal_fiendish_legacy = ("You are the recipient of a fiendish legacy that grants you supernatural abilities. You are Abyssal, associated with Chaotic Evil planes. Starting at 1st level You have Resistance to Poison Damage. You also know the Poison Spray cantrip. Starting at 3rd level you know the Ray of Sickness spell. Starting at 5th level you know the Hold Person spell. Once you cast the Spell with this trait, you can’t cast that Spell with it again until you finish a Long Rest;however, you can cast the Spell using any SpellSlots you have of the appropriate level.Intelligence, Wisdom, or Charisma is your spellcasting ability for the Spells you cast with this trait (choose the ability when you select the lineage).", abyssal_tiefling_spells)
+chthonic_fiendish_legacy = ("You are the recipient of a fiendish legacy that grants you supernatural abilities. You are Abyssal, associated with Chaotic Evil planes; Chthonic, associated with Neutral Evil planes; or Infernal, associated with Lawful Evil planes. Starting at 1st level You have Resistance to Necrotic Damage. You also know the Chill Touch cantrip. Starting at 3rd level you know the False Life spell. Starting at 5th level you know the Ray of Enfeeblement spell. Once you cast the Spell with this trait, you can’t cast that Spell with it again until you finish a Long Rest;however, you can cast the Spell using any SpellSlots you have of the appropriate level.Intelligence, Wisdom, or Charisma is your spellcasting ability for the Spells you cast with this trait (choose the ability when you select the lineage).", chthonic_tiefling_spells)
+infernal_fiendish_legacy = ("You are the recipient of a fiendish legacy that grants you supernatural abilities. You are Abyssal, associated with Chaotic Evil planes; Chthonic, associated with Neutral Evil planes; or Infernal, associated with Lawful Evil planes. Starting at 1st level You have Resistance to Fire Damage. You also know the Fire Bolt cantrip. Starting at 3rd level you know the Hellish Rebuke spell. Starting at 5th level you know the Darkness spell. Once you cast the Spell with this trait, you can’t cast that Spell with it again until you finish a Long Rest;however, you can cast the Spell using any SpellSlots you have of the appropriate level.Intelligence, Wisdom, or Charisma is your spellcasting ability for the Spells you cast with this trait (choose the ability when you select the lineage).", infernal_tiefling_spells)
+otherworldly_presence = ("You know the Thaumaturgy cantrip. When you cast it with this trait, the Spell uses the same spellcasting ability you use for your Fiendish Legacy trait.", (tiefling_spells))
 black_draconic_ancestry = "Your lineage stems from a dragon progenitor. You Draconic ancestor was a black dragon which is connected to acid damage. You display coloration and other features reminiscent of that dragon type."
 blue_draconic_ancestry = "Your lineage stems from a dragon progenitor. You Draconic ancestor was a blue dragon which is connected to lightning damage. You display coloration and other features reminiscent of that dragon type."
 brass_draconic_ancestry = "Your lineage stems from a dragon progenitor. You Draconic ancestor was a brass dragon which is connected to fire damage. You display coloration and other features reminiscent of that dragon type."
@@ -132,20 +151,12 @@ storms_thunder = "You are descended from Storm Giants. When you take damage from
 
 
 
-gain_skill_prof = (skillfull, keen_senses, naturally_stealthy)
-gain_feat = (versatile)
-gain_hp = (dwarven_toughness)
-gain_tool_prof = (forge_wise)
-gain_spells = (otherworldly_presence, drow_elven_lineage, high_elven_lineage, wood_elven_lineage, rock_gnomish_lineage, forest_gnomish_lineage, abyssal_fiendish_legacy, chthonic_fiendish_legacy, infernal_fiendish_legacy)
-
-
-
-
 # still need to figure out how to deal with spells
 
 
 
-human_special_traits = (resourceful, skillfull, versatile)
+human_special_traits = [resourceful, skillfull, versatile]
+
 dwarf_special_traits = (darkvision, dwarven_resilience, dwarven_toughness, forge_wise, stonecunning)
 drow_elf_special_traits = (darkvision, drow_elven_lineage, fey_ancestry, keen_senses, trance)
 high_elf_special_traits = (darkvision, high_elven_lineage, fey_ancestry, keen_senses, trance)
@@ -211,6 +222,8 @@ gnome = random.choice([rock_gnome, forest_gnome])
 tiefling = random.choice([abyssal_tiefling, chthonic_tiefling, infernal_tiefling])
 dragonborn = random.choice([black_dragonborn, blue_dragonborn, brass_dragonborn, bronze_dragonborn, copper_dragonborn, gold_dragonborn, green_dragonborn, red_dragonborn, silver_dragonborn, white_dragonborn])
 goliath = random.choice([cloud_goliath, fire_goliath, frost_goliath, hill_goliath, stone_goliath, storm_goliath])
+
+
 
 
 race_list = (human, dwarf, elf, gnome, halfling, orc, tiefling, dragonborn, goliath)
