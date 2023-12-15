@@ -53,6 +53,7 @@ class Character:
         self.weapon_prof = set()
         self.tool_prof = set()
         self.languages = set()
+        self.languages.add("Common")
         self.list_of_feats = set()
         self.initiative = 0
         self.hp_modifier = 0
@@ -65,6 +66,7 @@ class Character:
         self.wisdom = 10
         self.intelligence = 10
         self.charisma = 10
+        self.expertise = None
         self.assign_stats()
         self.assign_name()
         self.assign_race()
@@ -80,7 +82,7 @@ class Character:
         self.update_skill_bonuses()
         self.initiative += self.dexterity_mod
         self.update_saving_throws()
-        self.allignment = random.choice(["Lawful Good", "Lawful Neutral", "Lawful Evil", "Neutral Good", "True Neutral", "Neutral Evil", "Chaotic Good", "Chaotic Neutral", "Chaotic, Evil"])
+        self.allignment = random.sample(["Lawful Good", "Lawful Neutral", "Lawful Evil", "Neutral Good", "True Neutral", "Neutral Evil", "Chaotic Good", "Chaotic Neutral", "Chaotic, Evil"], 1)[0]
         self.hp = self.dndclass.hit_die + self.constitution_mod + self.hp_modifier
         
         
@@ -97,13 +99,13 @@ class Character:
                 rolled_stats.append(sum(rolled_num))
             rolled_stats.remove(min(rolled_stats))
             stats_to_use = rolled_stats
-            print(stats_to_use)
+
         else:
             stats_to_use = [15,14,13,12,10,8]
         stats_to_assign = ["strength","dexterity","constitution","wisdom","intelligence","charisma"]
         while stats_to_use:
-            picked_num = random.choice(stats_to_use)
-            picked_stat = random.choice(stats_to_assign)
+            picked_num = random.sample(stats_to_use, 1)[0]
+            picked_stat = random.sample(stats_to_assign, 1)[0]
            
             setattr(self,picked_stat, picked_num)
            
@@ -111,18 +113,18 @@ class Character:
             stats_to_assign.remove(picked_stat)
            
     def assign_name(self):
-        self.first_name = random.choice(first_name)
-        self.last_name = random.choice(last_name)
+        self.first_name = random.sample(first_name, 1)[0]
+        self.last_name = random.sample(last_name, 1)[0]
 
 
     def assign_race(self):
-        self.race = random.choice(race_list)
+        self.race = random.sample(race_list, 1)[0]
         if self.race.gain_skill_prof != None:
             self.mark_skills_as_proficent(self.race.gain_skill_prof)
         if self.race.gain_tool_prof != None:
             for tool in self.race.gain_tool_prof:
                 self.tool_prof.add(tool) 
-            print(tool)
+
         if self.race.gain_feat != None:
             for feat in self.race.gain_feat:
                 self.list_of_feats.add(feat)
@@ -160,7 +162,7 @@ class Character:
                 potential_class.update(class_options[stat])
 
 
-        self.dndclass = random.choice(list(potential_class))
+        self.dndclass = random.sample(list(potential_class), 1)[0]
         
         self.merge_inventories(self.dndclass.starting_equipment)
 
@@ -177,10 +179,29 @@ class Character:
         self.weapon_prof.add(self.dndclass.weapon_prof) 
         self.tool_prof.add(self.dndclass.tool_prof)
         self.armor_training.add(self.dndclass.armor_training)
+        
+        if self.dndclass.gain_languages != None:
+            self.languages.add(self.dndclass.gain_languages)
+        
+        
+        if self.dndclass.gain_feat != None:
+            for feat in self.dndclass.gain_feat:
+                self.list_of_feats.add(feat)
+        
+        
+        if self.dndclass.gain_expertise != None:
+            if self.expertise == None:
+                self.expertise = self.dndclass.gain_expertise
+            
+        self.merge_spell_lists(self.dndclass.spell_list)
+        
+
+
+
 
 
     def assign_background(self):
-        self.background = random.choice(all_backgrounds)
+        self.background = random.sample(all_backgrounds,1)[0]
         if self.background.ability_improvements[0] == "Strength":
             self.strength += 2
 
@@ -212,7 +233,6 @@ class Character:
         self.skill_proficency[self.background.skill_prof[0]] = True
         self.skill_proficency[self.background.skill_prof[1]] = True
         self.tool_prof.add(self.background.tool_prof)
-        self.languages.add("Common")
         self.languages.add(self.background.language)
         if self.background.feat != None:
             for feat in self.background.feat:
@@ -224,7 +244,11 @@ class Character:
     def handle_feats(self):
         for feat in self.list_of_feats:
             if feat.gain_skill_prof is not None:
-                self.mark_skills_as_proficent(feat.gain_skill_prof)
+                if feat.gain_skill_prof is list:
+                    for skill in feat.gain_skill_prof:
+                        self.mark_skills_as_proficent(skill)
+                else:
+                    self.mark_skills_as_proficent(feat.gain_skill_prof)
             if feat.gain_hp is not None:
                 if self.hp_modifier is None:
                     self.hp_modifier = feat.gain_hp
@@ -252,7 +276,7 @@ class Character:
                 for skill, value in self.skill_proficency.items():
                     if value == False:
                         pick_one.append(skill)
-                new_skill_gained = random.choice(pick_one)
+                new_skill_gained = random.sample(pick_one, 1)[0]
                 self.skill_proficency[new_skill_gained] = True
                 
 
@@ -300,6 +324,20 @@ class Character:
             elif skill in charisma_skills:
                 self.skill_bonuses[skill] += self.charisma_mod
 
+        if self.expertise != None:
+            if self.expertise[1] == "Any Proficent Skill":
+                skill_choices = []
+                for skill in self.skill_proficency:
+                    proficency = self.skill_proficency[skill] 
+                    if proficency == True:
+                        skill_choices.append(skill)
+                chosen_expert_skills = random.sample(skill_choices, self.expertise[0])
+                for skill in chosen_expert_skills:
+                    self.skill_bonuses[skill] += self.proficency_bonus
+
+
+
+
 
     def update_saving_throws(self):
         for stat, is_proficient in self.saving_throw_prof.items():
@@ -319,44 +357,106 @@ class Character:
 
 
 new = Character()
-equipment_items = [(quantity, item) for item, quantity in new.equipment.items()]
-equipment_str = "\n".join([f"{item[0]}x {item[1]}" for item in equipment_items])
-skills_str = "\n".join([f"{skill:<20} {bonus}" for skill, bonus in new.skill_bonuses.items()])
-
-grouped_items = [equipment_items[i:i+3] for i in range(0, len(equipment_items), 3)]
-formatted_equipment = "\n".join([", ".join([f"{item[0]}x {item[1]}" for item in group]) for group in grouped_items])
-languages_str = ', '.join(new.languages)
-tools_str = "None" 
-if new.tool_prof != None:
-    tools_str = ', '.join(tool for tool in new.tool_prof if tool is not None)
-weapon_prof_str = ', '.join(str(weapon).capitalize() for weapon in new.weapon_prof) if new.weapon_prof else "None"
 
 
+def make_my_character(new):
+
+    formatted_equipment = [f"{value}x {key}" for key, value in new.equipment.items()]
+    formatted_equipment_lines = [", ".join(formatted_equipment[i:i+4]) for i in range(0, len(formatted_equipment), 5)]
+    result = "\n".join(formatted_equipment_lines)
+
+    tool_proficiency = new.tool_prof
+
+    if isinstance(tool_proficiency, set):
+        proficiency_text = ", ".join(item for item in tool_proficiency if item is not None)
+    elif isinstance(tool_proficiency, tuple) and tool_proficiency[1] is not None:
+        proficiency_text = tool_proficiency[0]
+    else:
+        proficiency_text = "None"
+
+
+    if isinstance(new.languages, set):
+        languages_text = ', '.join(str(lang) for lang in new.languages)
+    elif isinstance(new.languages, tuple):
+        languages_text = ', '.join(str(lang) if not isinstance(lang, tuple) else ', '.join(str(sublang) for sublang in lang) for lang in new.languages)
+    else:
+        languages_text = str(new.languages)
+
+
+
+    print(f"######################################################################")
+    print(f"I am {new.first_name} {new.last_name}, I am a proud {new.race}") 
+    print(f"I use to be a {new.background} and now I am a level {new.level} {new.dndclass}.")
+    print(f"######################################################################")
+    print(f"My equipment includes:\n{result}")
+    print(f"######################################################################")
+    print(f"My stats are:")
+    print(f"HP:  {new.hp}       Initiative: {new.initiative}")
+    print(f"STR: {new.strength_mod} ({new.strength})   DEX: {new.dexterity_mod} ({new.dexterity})")
+    print(f"CON: {new.constitution_mod} ({new.constitution})   WIS: {new.wisdom_mod} ({new.wisdom})")
+    print(f"INT: {new.intelligence_mod} ({new.intelligence})   CHA: {new.charisma_mod} ({new.charisma})")
+    print(f"######################################################################")
+    print(f"Here is my skills list:")
+    for skill, bonus in new.skill_bonuses.items():
+        print(f"{skill.capitalize():<20} : {bonus:+>2}")
+    print(f"######################################################################")
+    print(f"I am good with {new.weapon_prof} weapons.")
+    print(f"I am handy with {proficiency_text}")
+    print(f"I can also speak {languages_text}.")
+    print(f"I can wear the following Armor types: {new.armor_training}")
+    print(f"######################################################################")
+    print(f"I have taken some feats; {new.list_of_feats}")
+    for feat in new.list_of_feats:
+        print(f"I have taken the feat {feat.feat_name}. This feat allows me to {feat.feat_features}")
+    print(f"######################################################################")
+    print("My spells include:")
+    for level, spells in new.spell_list.items():
+        print(f"{level.capitalize()}:")
+        for spell in spells:
+            if isinstance(spell, list):
+                for sub_spell in spell:
+                    print(f"- {sub_spell}")
+            else:
+                print(f"- {spell}")
+    print(f"######################################################################")
+    print(f"Here are the features I gain because I am a {new.dndclass}")
+    for feature in new.dndclass.class_features:
+        if isinstance(feature, tuple):
+            if len(feature) == 1:
+                # Handle the case where the tuple contains only a description
+                print(f"- {feature[0]}")
+            else:
+                # The tuple contains both a description and spells
+                description, *details = feature
+                print(f"- {description}")
+                for detail in details:
+                    if isinstance(detail, dict):
+                        for level, spell_list in detail.items():
+                            if isinstance(spell_list, list):
+                                # Check if it's a list of strings or a list of lists
+                                if all(isinstance(item, str) for item in spell_list):
+                                    print(f"  {level.capitalize()}: {', '.join(spell_list)}")
+                                else:
+                                    # Assuming it's a list of lists
+                                    for item_list in spell_list:
+                                        print(f"  {', '.join(map(str, item_list))}")
+                            else:
+                                print(f"  {level.capitalize()}: {spell_list}")
+                    elif isinstance(detail, list):
+                        # Check if it's a list of strings or a list of lists
+                        if all(isinstance(item, str) for item in detail):
+                            print(f"  {', '.join(detail)}")
+                        else:
+                            # Assuming it's a list of lists
+                            for item_list in detail:
+                                print(f"  {', '.join(map(str, item_list))}")
+                    else:
+                        print(f"  {detail}")
+        else:
+            print(f"- {feature}")
 
 
 
 
 
-print(f"######################################################################")
-print(f"I am {new.first_name} {new.last_name}, I am a proud {new.race}") 
-print(f"I use to be a {new.background} and now I am a {new.dndclass}.")
-print(f"######################################################################")
-print(f"My equipment includes: {formatted_equipment}")
-print(f"######################################################################")
-print(f"My stats are:")
-print(f"HP:  {new.hp}       Initiative: {new.initiative}")
-print(f"STR: {new.strength_mod} ({new.strength})   DEX: {new.dexterity_mod} ({new.dexterity})")
-print(f"CON: {new.constitution_mod} ({new.constitution})   WIS: {new.wisdom_mod} ({new.wisdom})")
-print(f"INT: {new.intelligence_mod} ({new.intelligence})   CHA: {new.charisma_mod} ({new.charisma})")
-print(f"######################################################################")
-print(f"Here is my skills list:\n{skills_str}")
-print(f"######################################################################")
-print(f"I am good with {weapon_prof_str} weapons.")
-print(f"I am handy with {tools_str}")
-print(f"I can also speak {languages_str}.")
-print(f"I can wear the following Armor types; {new.armor_training}")
-print(f"######################################################################")
-print(f"I have taken some feats; {new.list_of_feats}")
-print(f"######################################################################")
-print(f"Here is my spellbook; {new.spell_list}")
-
+make_my_character(new)

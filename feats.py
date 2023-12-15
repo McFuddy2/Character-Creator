@@ -173,7 +173,8 @@ tough = Feat("Tough", tough_features)
 
 all_feats = (alert, crafter, healer, lucky, magic_initiate_arcane, magic_initiate_divine, magic_initiate_primal, musician, savage_attacker, skilled, tavern_brawler, tough)
 
+fs_feats = ()
 
-
+fs_feat = random.choice=(fs_feats)
 
 

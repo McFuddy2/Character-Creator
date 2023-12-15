@@ -8,7 +8,7 @@ arcane_first_level_list = ("Alarm", "Armor of Agathys", "Arms of Hadar", "Burnin
 divine_cantrips_list = ("Guidance", "Light", "Resistance", "Sacred Flame", "Spare the Dying", "Thaumaturgy", "Toll the Dead", "Word of Radiance")
 divine_first_level_list = ("Bane", "Bless", "Command", "Compelled Duel", "Cure Wounds", "Detect Evil and Good", "Detect Magic", "Detect Poison and Disease", "Divine Favor", "Guiding Bolt", "Healing Word", "Heroism", "Inflict Wounds", "Protection from Evil and Good", "Purify Food and Drink", "Sanctuary", "Searing Smite", "Shield of Faith", "Wrathful Smite")
 
-primal_cantrips_list = ("Druidcraft", "Elementalism", "Frostbite", "Guidance", "Mending", "Message", "Poison Spray", "Produce Flame", "Resistance", "Shillelagh", "Spare the Dying", "Thorn Whip", "Thunderclap")
+primal_cantrips_list = ["Druidcraft", "Elementalism", "Frostbite", "Guidance", "Mending", "Message", "Poison Spray", "Produce Flame", "Resistance", "Shillelagh", "Spare the Dying", "Thorn Whip", "Thunderclap"]
 primal_first_level_list = ("Animal Friendship", "Create or Destroy Water", "Cure Wounds", "Detect Magic", "Detect Poison and Disease", "Ensnaring Strike", "Entangle", "Faerie Fire ", "Fog Cloud", "Goodberry ", "Hail of Thorns", "Healing Word", "Jump", "Longstrider", "Purify Food and Drink", "Speak with Animals", "Thunderwave ")
 
 

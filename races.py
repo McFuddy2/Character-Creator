@@ -27,7 +27,6 @@ class Race:
         features_that_gain_hp = (dwarven_toughness,)
         features_that_gain_tool_prof = (forge_wise,)
         features_that_gain_spells = (otherworldly_presence, drow_elven_lineage, high_elven_lineage, wood_elven_lineage, rock_gnomish_lineage, forest_gnomish_lineage, abyssal_fiendish_legacy, chthonic_fiendish_legacy, infernal_fiendish_legacy)
-
         for trait in self.special_traits:
             if trait in features_that_gain_skill_prof and isinstance(trait, tuple) and len(trait) == 2 and isinstance(trait[1], tuple):
                 try:
@@ -149,14 +148,7 @@ storms_thunder = "You are descended from Storm Giants. When you take damage from
 
 
 
-
-
-# still need to figure out how to deal with spells
-
-
-
 human_special_traits = [resourceful, skillfull, versatile]
-
 dwarf_special_traits = (darkvision, dwarven_resilience, dwarven_toughness, forge_wise, stonecunning)
 drow_elf_special_traits = (darkvision, drow_elven_lineage, fey_ancestry, keen_senses, trance)
 high_elf_special_traits = (darkvision, high_elven_lineage, fey_ancestry, keen_senses, trance)
@@ -217,11 +209,11 @@ stone_goliath = Race("Goliath (Stone)", "Humanoid", "Medium", 35, 80, stone_goli
 storm_goliath = Race("Goliath (Storm)", "Humanoid", "Medium", 35, 80, storm_goliath_special_traits)
 
 
-elf = random.choice([drow_elf, high_elf, wood_elf])
-gnome = random.choice([rock_gnome, forest_gnome])
-tiefling = random.choice([abyssal_tiefling, chthonic_tiefling, infernal_tiefling])
-dragonborn = random.choice([black_dragonborn, blue_dragonborn, brass_dragonborn, bronze_dragonborn, copper_dragonborn, gold_dragonborn, green_dragonborn, red_dragonborn, silver_dragonborn, white_dragonborn])
-goliath = random.choice([cloud_goliath, fire_goliath, frost_goliath, hill_goliath, stone_goliath, storm_goliath])
+elf = random.sample([drow_elf, high_elf, wood_elf], 1)[0]
+gnome = random.sample([rock_gnome, forest_gnome], 1)[0]
+tiefling = random.sample([abyssal_tiefling, chthonic_tiefling, infernal_tiefling], 1)[0]
+dragonborn = random.sample([black_dragonborn, blue_dragonborn, brass_dragonborn, bronze_dragonborn, copper_dragonborn, gold_dragonborn, green_dragonborn, red_dragonborn, silver_dragonborn, white_dragonborn], 1)[0]
+goliath = random.sample([cloud_goliath, fire_goliath, frost_goliath, hill_goliath, stone_goliath, storm_goliath], 1)[0]
 
 
 
