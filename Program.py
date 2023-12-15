@@ -42,8 +42,9 @@ skills_list = {"Acrobatics":False,
 
 
 class Character:
-    def __init__(self, level=1):
+    def __init__(self, level=1, stats="Standard Array"):
         self.equipment = {"GP":0}
+        self.stats= stats
         self.skill_proficency = skills_list.copy()
         self.skill_bonuses = skills_list.copy()
         self.saving_throw_prof = saving_throw_list.copy()
@@ -53,6 +54,7 @@ class Character:
         self.tool_prof = set()
         self.languages = set()
         self.list_of_feats = set()
+        self.initiative = 0
         self.hp_modifier = 0
         self.spell_list = {}
         self.level = level
@@ -68,6 +70,7 @@ class Character:
         self.assign_race()
         self.assign_background()
         self.pick_a_class()
+        self.handle_feats()
         self.strength_mod = (self.strength - 10) // 2
         self.dexterity_mod = (self.dexterity - 10) // 2
         self.constitution_mod = (self.constitution - 10) // 2
@@ -75,7 +78,7 @@ class Character:
         self.intelligence_mod = (self.intelligence - 10) // 2
         self.charisma_mod = (self.charisma - 10) // 2
         self.update_skill_bonuses()
-        self.initiative = 0 + self.dexterity_mod
+        self.initiative += self.dexterity_mod
         self.update_saving_throws()
         self.allignment = random.choice(["Lawful Good", "Lawful Neutral", "Lawful Evil", "Neutral Good", "True Neutral", "Neutral Evil", "Chaotic Good", "Chaotic Neutral", "Chaotic, Evil"])
         self.hp = self.dndclass.hit_die + self.constitution_mod + self.hp_modifier
@@ -84,15 +87,27 @@ class Character:
 
 
     def assign_stats(self):
-        standard_array = [15,14,13,12,10,8]
+        stats_to_use = []
+        if self.stats == "Rolled":
+            rolled_stats = []
+            for i in range(7):
+                rolled_num = [random.randint(1, 6) for _ in range(4)]
+                min_number = min(rolled_num)
+                rolled_num.remove(min_number)
+                rolled_stats.append(sum(rolled_num))
+            rolled_stats.remove(min(rolled_stats))
+            stats_to_use = rolled_stats
+            print(stats_to_use)
+        else:
+            stats_to_use = [15,14,13,12,10,8]
         stats_to_assign = ["strength","dexterity","constitution","wisdom","intelligence","charisma"]
-        while standard_array:
-            picked_num = random.choice(standard_array)
+        while stats_to_use:
+            picked_num = random.choice(stats_to_use)
             picked_stat = random.choice(stats_to_assign)
            
             setattr(self,picked_stat, picked_num)
            
-            standard_array.remove(picked_num)
+            stats_to_use.remove(picked_num)
             stats_to_assign.remove(picked_stat)
            
     def assign_name(self):
@@ -103,9 +118,7 @@ class Character:
     def assign_race(self):
         self.race = random.choice(race_list)
         if self.race.gain_skill_prof != None:
-            for skill in self.race.gain_skill_prof:
-                self.skill_proficency[skill] = True
-            print(skill)
+            self.mark_skills_as_proficent(self.race.gain_skill_prof)
         if self.race.gain_tool_prof != None:
             for tool in self.race.gain_tool_prof:
                 self.tool_prof.add(tool) 
@@ -123,7 +136,7 @@ class Character:
             if isinstance(self.race.gain_spells, dict):
                 self.merge_spell_lists(self.race.gain_spells)
             elif isinstance(self.race.gain_spells, list):
-                print(f"ERROR!!!! THIS WAS A LIST OF SPELLS WTF!!! {self.race.gain_spells}")
+                self.merge_spell_lists(self.race.gain_spells[0])
 
 
 
@@ -198,12 +211,52 @@ class Character:
 
         self.skill_proficency[self.background.skill_prof[0]] = True
         self.skill_proficency[self.background.skill_prof[1]] = True
-
-
         self.tool_prof.add(self.background.tool_prof)
         self.languages.add("Common")
         self.languages.add(self.background.language)
-        
+        if self.background.feat != None:
+            for feat in self.background.feat:
+                self.list_of_feats.add(feat)
+
+
+
+
+    def handle_feats(self):
+        for feat in self.list_of_feats:
+            if feat.gain_skill_prof is not None:
+                self.mark_skills_as_proficent(feat.gain_skill_prof)
+            if feat.gain_hp is not None:
+                if self.hp_modifier is None:
+                    self.hp_modifier = feat.gain_hp
+            if feat.gain_tool_prof is not None:
+                for tool in feat.gain_tool_prof:
+                    self.tool_prof.add(tool) 
+            if feat.gain_spells != {}:
+                self.merge_spell_lists(feat.gain_spells)
+            if feat.gain_initiative is not None:
+                if feat.gain_initiative == "Proficency Bonus":
+                    self.initiative += self.proficency_bonus
+            if feat.gain_armor_training is not None:
+                for armor in feat.gain_armor_training:
+                    self.armor_training.add(armor)
+
+
+
+
+    def mark_skills_as_proficent(self, new_skills):
+        for skill in new_skills:
+            if self.skill_proficency[skill] != True:
+                self.skill_proficency[skill] = True
+            else:
+                pick_one = []
+                for skill, value in self.skill_proficency.items():
+                    if value == False:
+                        pick_one.append(skill)
+                new_skill_gained = random.choice(pick_one)
+                self.skill_proficency[new_skill_gained] = True
+                
+
+
 
 
     def merge_inventories(self, new_inv):
@@ -276,6 +329,7 @@ languages_str = ', '.join(new.languages)
 tools_str = "None" 
 if new.tool_prof != None:
     tools_str = ', '.join(tool for tool in new.tool_prof if tool is not None)
+weapon_prof_str = ', '.join(str(weapon).capitalize() for weapon in new.weapon_prof) if new.weapon_prof else "None"
 
 
 
@@ -297,11 +351,12 @@ print(f"INT: {new.intelligence_mod} ({new.intelligence})   CHA: {new.charisma_mo
 print(f"######################################################################")
 print(f"Here is my skills list:\n{skills_str}")
 print(f"######################################################################")
-print(f"I am good with {new.weapon_prof} weapons.")
+print(f"I am good with {weapon_prof_str} weapons.")
 print(f"I am handy with {tools_str}")
 print(f"I can also speak {languages_str}.")
 print(f"I can wear the following Armor types; {new.armor_training}")
 print(f"######################################################################")
-
-
+print(f"I have taken some feats; {new.list_of_feats}")
+print(f"######################################################################")
+print(f"Here is my spellbook; {new.spell_list}")
 

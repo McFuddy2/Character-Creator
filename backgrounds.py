@@ -10,7 +10,7 @@ class Background:
         self.skill_prof = skill_prof
         self.tool_prof = tool_prof
         self.language = language
-        self.feat = feat
+        self.feat = [feat]
         self.equipment = equipment
 
     def __str__(self):
@@ -37,7 +37,7 @@ urchin_equipment = {"Bedroll":1, "Common Clothes":1, "Dagger":2, "Gaming Set":1}
 
 
 
-acolyte = Background("Acolyte", ("Wisdom", "Intelligence"), ("insight", "Religon"), "calligrapher's supplies", "Celestial", magic_initiate_divine, acolyte_equipment)
+acolyte = Background("Acolyte", ("Wisdom", "Intelligence"), ("Insight", "Religon"), "calligrapher's supplies", "Celestial", magic_initiate_divine, acolyte_equipment)
 artisan = Background("Artisan", ("Intelligence", "Charisma"), ("Investigation", "Persuasion"), "Artisans's Tools(your choice)", "Gnomish", crafter, artisan_equipment)
 charlatan = Background("Charlatan", ("Charisma", "Dexterity"),("Deception", "Sleight of Hand"), "Forgery Kit", "Infernal", skilled, charlatan_equipment)
 criminal = Background("Criminal", ("Dexterity", "Intelligence"), ("Slight of Hand", "Stealth"), "Thieves' Tools", "Thieves' Cant", alert, criminal_equipment)
